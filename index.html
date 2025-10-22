@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tara Bala Calculator & Chart</title>
+<title>Tara Bala Calculator & Table</title>
 <style>
   :root{
     --bg1:#5a60ff; --bg2:#7f87ff; --white:#fff;
@@ -54,11 +54,11 @@
 </head>
 <body>
 
-<h1>🌟 Tara Bala Calculator & Chart 🌙</h1>
+<h1>🌟 Tara Bala Calculator & Table 🌙</h1>
 
 <div class="tabs">
   <div class="tab active" id="tabCalc" onclick="showTab('calc')">Calculator</div>
-  <div class="tab" id="tabChart" onclick="showTab('chart')">Chart</div>
+  <div class="tab" id="tabChart" onclick="showTab('chart')">Table</div>
 </div>
 
 <div class="container">
@@ -73,10 +73,10 @@
     <div id="calcResult" class="result"></div>
   </div>
 
-  <!-- Chart -->
+  <!-- Table -->
   <div id="chartContent" class="content" style="display:none;margin-top:16px">
-    <h2>🔹 Tara Bala Chart</h2>
-    <label for="chartNak">Select Your Janma Nakshatra:</label>
+    <h2>🔹 Tara Bala Table</h2>
+    <label for="chartNak">Select your Janma Nakshatra:</label>
     <select id="chartNak" onchange="generateChart()"></select>
 
     <div class="download-icons">
@@ -142,7 +142,7 @@ function calculateTaraBala(){
    <p><strong>Count (inclusive):</strong> ${count}</p>`;
 }
 
-/* Generate Chart with merged Nakshatra header */
+/* Generate Table with merged Nakshatra header */
 function generateChart(){
  const start=nakshatras.indexOf(chartSel.value);
  if(start<0)return;
@@ -174,7 +174,7 @@ function downloadExcel(){
 
   const ws=XLSX.utils.json_to_sheet(rows);
   const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Tara Bala Chart");
+  XLSX.utils.book_append_sheet(wb, ws, "Tara Bala Table");
   XLSX.writeFile(wb, `${chartSel.value}_TaraBalaChart.xlsx`);
 }
 
@@ -187,7 +187,7 @@ async function downloadPDF(){
   
   const doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
   doc.setFontSize(16);
-  doc.text(`Tara Bala Chart - ${chartSel.value}`,140,40);
+  doc.text(`Tara Bala Table - ${chartSel.value}`,140,40);
 
   const header=["Tara Type","Nakshatra / Star","Result"];
   const body=taraMap.map((t,i)=>[
@@ -197,7 +197,7 @@ async function downloadPDF(){
   ]);
 
   doc.autoTable({head:[header], body, startY:70, styles:{fontSize:9}});
-  doc.save(`${chartSel.value}_TaraBalaChart.pdf`);
+  doc.save(`${chartSel.value}_TaraBalaTable.pdf`);
 }
 
 
