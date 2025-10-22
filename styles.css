@@ -67,13 +67,17 @@ body.calc {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 30px; /* Added space for fixed back button */
 }
 
 h1 {
   margin-bottom: 20px;
+  font-size: 1.8em;
+  line-height: 1.3;
 }
 
+/* Selector & Button */
 .selector {
   margin: 10px;
 }
@@ -98,39 +102,40 @@ button:hover {
   background: #e0e0e0;
 }
 
-.result {
+/* Result Card */
+.result, .horaResult {
   margin-top: 20px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  width: 80%;
-  max-width: 400px;
+  width: 100%;
+  max-width: 900px;
 }
 
 /* Back Button */
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
+.back-btn { 
+  top: 15px;
+  left: 15px;
+  z-index: 100;
   text-decoration: none;
   color: white;
   background: rgba(255, 255, 255, 0.2);
   padding: 8px 14px;
   border-radius: 8px;
   transition: 0.3s;
+  font-size: 0.9em;
 }
+
+.back-div {
+    width: 100%;
+    display: flex;
+    padding-left: 20px;
+    justify-content: flex-start;
+    padding-bottom: 10px;
+  }
 
 .back-btn:hover {
   background: rgba(255, 255, 255, 0.4);
-}
-
-.horaResult{
-    margin-top: 20px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    width: 100%;
-    max-width: 900px;
 }
 
 /* 🌗 Hora Table Styles */
@@ -145,6 +150,7 @@ button:hover {
   margin-bottom: 10px;
   font-weight: 600;
   color: #facc15;
+  font-size: 1.2em;
 }
 
 .hora-table {
@@ -185,9 +191,38 @@ button:hover {
   font-weight: bold;
 }
 
+/* Responsive */
 @media (max-width: 600px) {
+  body.calc {
+    padding-top: 30px;
+  }
+
+
+  h1 {
+    font-size: 1.4em;
+  }
+
   .hora-table th, .hora-table td {
-    font-size: 0.9rem;
-    padding: 10px;
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+
+  #sunriseTime, #sunsetTime {
+    display: block;
+    font-size: 0.75em;
+  }
+
+  .back-div {
+    width: 100%;
+    display: flex;
+    padding-left: 20px;
+    justify-content: flex-start;
+    padding-bottom: 30px;
+  }
+
+  .back-btn {
+    padding: 6px 10px;
+    font-size: 0.8em;
   }
 }
+
