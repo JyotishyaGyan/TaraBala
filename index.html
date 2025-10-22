@@ -67,6 +67,10 @@
     <h2>🔹 Tara Bala Calculator</h2>
     <label for="userNak">Select your Nakshatra</label>
     <select id="userNak"></select>
+	
+	<!-- Swap Button -->
+	<span class="icon-btn" title="Swap Nakshatras" onclick="swapNakshatra()" style="margin:6px 0;display:inline-block;font-size:1.2rem;">⇄</span>
+
     <label for="otherNak">Select Day's/Other Person's Nakshatra</label>
     <select id="otherNak"></select>
     <button onclick="calculateTaraBala()">Check Tara Bala</button>
@@ -176,6 +180,13 @@ function downloadExcel(){
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Tara Bala Table");
   XLSX.writeFile(wb, `${chartSel.value}_TaraBalaChart.xlsx`);
+}
+
+function swapNakshatra(){
+  const temp = userSel.value;
+  userSel.value = otherSel.value;
+  otherSel.value = temp;
+  calculateTaraBala(); // Recalculate automatically after swap
 }
 
 async function downloadPDF(){
