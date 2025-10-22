@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  text-align: center;
+}
+
+/* 🌸 Home Page Styling */
+body.home {
+  background: radial-gradient(circle at top right, #5a60ff, #101030);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  margin-top: 40px;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 40px;
+  width: 90%;
+  max-width: 900px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 30px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.card:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+footer {
+  margin-top: auto;
+  padding: 20px;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+/* 🌕 Calculator Page */
+body.calc {
+  background: linear-gradient(135deg, #4c4cff, #7f7fff);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.selector {
+  margin: 10px;
+}
+
+select,
+button {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1em;
+}
+
+button {
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #e0e0e0;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  width: 80%;
+  max-width: 400px;
+}
+
+/* Back Button */
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  text-decoration: none;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.horaResult{
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 900px;
+}
+
+/* 🌗 Hora Table Styles */
+.hora-section {
+  width: 90%;
+  max-width: 900px;
+  margin: 30px auto;
+  text-align: center;
+}
+
+.hora-section h2 {
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #facc15;
+}
+
+.hora-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.hora-table th,
+.hora-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.hora-table th {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fefce8;
+  font-weight: 600;
+}
+
+.hora-table tr:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hora-table tr.active-day {
+  background: linear-gradient(135deg, #fde047, #facc15);
+  color: #111827;
+  font-weight: bold;
+}
+
+.hora-table tr.active-night {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #0f172a;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .hora-table th, .hora-table td {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+}
