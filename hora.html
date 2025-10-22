@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hora Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/suncalc"></script>
+</head>
+<body class="calc">
+
+  <a href="index.html" class="back-btn">← Back</a>
+  <h1>✨ Hora Calculator ✨</h1>
+
+  <button onclick="getLocation()">Use My Location</button>
+  <div id="location" style="margin-top:10px;"></div>
+
+  <section id="dayHoraSection" class="hora-section" style="display:none;">
+  <h2>☀️ Day Horas <span id="sunriseTime" style="font-size:0.8em;"></span></h2>
+  <table id="dayHoraTable" class="hora-table"></table>
+</section>
+
+<section id="nightHoraSection" class="hora-section" style="display:none;">
+  <h2>🌙 Night Horas <span id="sunsetTime" style="font-size:0.8em;"></span></h2>
+  <table id="nightHoraTable" class="hora-table"></table>
+</section>
+
+
+  <footer>🌸 Crafted with Jyotish & Love 🌙</footer>
+
+  <script src="hora.js"></script>
+</body>
+</html>
