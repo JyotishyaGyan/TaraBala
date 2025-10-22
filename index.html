@@ -1,113 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tara Bala Calculator</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #4c4cff, #7f7fff);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    select, button {
-      padding: 10px;
-      margin: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 1em;
-    }
-    button {
-      background: #fff;
-      color: #333;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #e0e0e0;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 20px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tara Bala Calculator & Chart</title>
+<style>
+  :root{
+    --bg1:#5a60ff; --bg2:#7f87ff; --white:#fff;
+    --ausp:#2ecc71; --veryausp:#1b8f4a; --inausp:#e74c3c; --mixed:#f39c12;
+    --card:rgba(255,255,255,0.08); --card2:rgba(255,255,255,0.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Poppins",sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--white);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:24px;
+  }
+  h1{text-align:center;margin-bottom:20px}
+  .tabs{display:flex;width:100%;max-width:760px;background:var(--card);
+    border-radius:14px;overflow:hidden;margin-bottom:18px}
+  .tab{flex:1;padding:12px 16px;text-align:center;cursor:pointer}
+  .tab.active{background:var(--card2);font-weight:600}
+  .container{width:100%;max-width:760px}
+  .content{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+  label{display:block;margin-top:8px;margin-bottom:6px;font-size:0.95rem}
+  select,button{width:100%;padding:10px 12px;border-radius:8px;border:none;font-size:1rem}
+  select{margin-bottom:10px}
+  button{background:#fff;color:#222;cursor:pointer;margin-top:8px}
+  button:hover{opacity:0.95}
+  .result{margin-top:14px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.04);overflow-x:auto;}
+  .download-icons{
+    display:flex;justify-content:flex-end;gap:12px;margin-top:6px;font-size:1.3rem;
+  }
+  .icon-btn{
+    cursor:pointer;transition:0.3s;opacity:0.8;
+  }
+  .icon-btn:hover{opacity:1;transform:scale(1.1);}
+  table{width:100%;border-collapse:collapse;margin-top:12px;text-align:center;font-size:0.95rem;min-width:500px;}
+  th,td{padding:10px;border:1px solid rgba(255,255,255,0.08)}
+  th{background:rgba(255,255,255,0.06)}
+  .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:600;color:#fff}
+  .ausp{background:var(--ausp)} .veryausp{background:var(--veryausp)}
+  .inausp{background:var(--inausp)} .mixed{background:var(--mixed)}
+  .row-ausp td{background:rgba(46,204,113,0.08)}
+  .row-veryausp td{background:rgba(27,143,74,0.08)}
+  .row-inausp td{background:rgba(231,76,60,0.06)}
+  .row-mixed td{background:rgba(243,156,18,0.06)}
+  @media(max-width:540px){.tabs{flex-direction:column}.tab{padding:10px}}
+</style>
 </head>
 <body>
-  <h1>🌟 Tara Bala Calculator 🌙</h1>
-  
-  <div>
-    <label for="userNak">Select your Nakshatra:</label><br>
+
+<h1>🌟 Tara Bala Calculator & Chart 🌙</h1>
+
+<div class="tabs">
+  <div class="tab active" id="tabCalc" onclick="showTab('calc')">Calculator</div>
+  <div class="tab" id="tabChart" onclick="showTab('chart')">Chart</div>
+</div>
+
+<div class="container">
+  <!-- Calculator -->
+  <div id="calcContent" class="content">
+    <h2>🔹 Tara Bala Calculator</h2>
+    <label for="userNak">Select your Nakshatra</label>
     <select id="userNak"></select>
-  </div>
-  <div>
-    <label for="otherNak">Select Day's/Other Nakshatra:</label><br>
+    <label for="otherNak">Select Day's/Other Person's Nakshatra</label>
     <select id="otherNak"></select>
+    <button onclick="calculateTaraBala()">Check Tara Bala</button>
+    <div id="calcResult" class="result"></div>
   </div>
 
-  <button onclick="calculateTaraBala()">Check Tara Bala</button>
+  <!-- Chart -->
+  <div id="chartContent" class="content" style="display:none;margin-top:16px">
+    <h2>🔹 Tara Bala Chart</h2>
+    <label for="chartNak">Select Your Janma Nakshatra:</label>
+    <select id="chartNak" onchange="generateChart()"></select>
 
-  <div class="result" id="result"></div>
+    <div class="download-icons">
+      <span class="icon-btn" title="Download Excel" onclick="downloadExcel()">📊</span>
+      <span class="icon-btn" title="Download PDF" onclick="downloadPDF()">📄</span>
+      <span class="icon-btn" title="Print / Save" onclick="window.print()">🖨️</span>
+    </div>
 
-  <script>
-    const nakshatras = [
-      "Ashwini","Bharani","Krittika","Rohini","Mrigashira","Ardra","Punarvasu","Pushya","Ashlesha",
-      "Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha",
-      "Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishta","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati"
-    ];
+    <div id="chartResult" class="result"></div>
+  </div>
+</div>
 
-    const taraMap = [
-      { remainder: 1, type: "Janma", meaning: "Own Star", result: "Mixed" },
-      { remainder: 2, type: "Sampat", meaning: "Wealth", result: "Auspicious" },
-      { remainder: 3, type: "Vipat", meaning: "Danger", result: "Inauspicious" },
-      { remainder: 4, type: "Kshema", meaning: "Welfare", result: "Auspicious" },
-      { remainder: 5, type: "Pratyari", meaning: "Obstruction", result: "Inauspicious" },
-      { remainder: 6, type: "Sadhaka", meaning: "Achievement", result: "Auspicious" },
-      { remainder: 7, type: "Naidhana (Vadha)", meaning: "Destruction", result: "Inauspicious" },
-      { remainder: 8, type: "Mitra", meaning: "Friendly", result: "Auspicious" },
-      { remainder: 9, type: "Parama Mitra", meaning: "Very Friendly", result: "Auspicious" }
-    ];
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
-    const userSelect = document.getElementById("userNak");
-    const otherSelect = document.getElementById("otherNak");
+<script>
+const nakshatras=[
+ "Ashwini","Bharani","Krittika","Rohini","Mrigashira","Ardra","Punarvasu","Pushya","Ashlesha",
+ "Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha",
+ "Moola","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishta","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati"
+];
+const taraMap=[
+ {type:"Janma",result:"Mixed",css:"mixed"},
+ {type:"Sampat",result:"Auspicious",css:"ausp"},
+ {type:"Vipat",result:"Inauspicious",css:"inausp"},
+ {type:"Kshema",result:"Auspicious",css:"ausp"},
+ {type:"Pratyari",result:"Inauspicious",css:"inausp"},
+ {type:"Sadhaka",result:"Auspicious",css:"ausp"},
+ {type:"Naidhana (Vadha)",result:"Inauspicious",css:"inausp"},
+ {type:"Mitra",result:"Auspicious",css:"ausp"},
+ {type:"Parama Mitra",result:"Very Auspicious",css:"veryausp"}
+];
 
-    nakshatras.forEach(n => {
-      const opt1 = new Option(n, n);
-      const opt2 = new Option(n, n);
-      userSelect.add(opt1);
-      otherSelect.add(opt2);
-    });
+const userSel=document.getElementById('userNak');
+const otherSel=document.getElementById('otherNak');
+const chartSel=document.getElementById('chartNak');
 
-    function calculateTaraBala() {
-      const userIndex = nakshatras.indexOf(userSelect.value) + 1;
-      const otherIndex = nakshatras.indexOf(otherSelect.value) + 2;
-      
-      if (userIndex === -1 || otherIndex === -1) return;
+nakshatras.forEach(n=>{
+  userSel.add(new Option(n,n));
+  otherSel.add(new Option(n,n));
+  chartSel.add(new Option(n,n));
+});
 
-      let count = otherIndex - userIndex;
-      if (count <= 0) count += 27;
-      
-      let remainder = count % 9;
-      if (remainder === 0) remainder = 9;
+function showTab(tab){
+ document.getElementById('calcContent').style.display=tab==='calc'?'block':'none';
+ document.getElementById('chartContent').style.display=tab==='chart'?'block':'none';
+ document.getElementById('tabCalc').classList.toggle('active',tab==='calc');
+ document.getElementById('tabChart').classList.toggle('active',tab==='chart');
+}
 
-      const tara = taraMap.find(t => t.remainder === remainder);
+function calculateTaraBala(){
+ const u=nakshatras.indexOf(userSel.value);
+ const o=nakshatras.indexOf(otherSel.value);
+ if(u<0||o<0)return;
+ let count=(o-u+1);while(count<=0)count+=27;count=((count-1)%27)+1;
+ let rem=count%9;if(rem===0)rem=9;
+ const t=taraMap[rem-1];
+ const badge=`badge ${t.css}`;
+ document.getElementById('calcResult').innerHTML=`
+   <h3>${t.type} Tara <span class="${badge}">${t.result}</span></h3>
+   <p><strong>Count (inclusive):</strong> ${count}</p>`;
+}
 
-      document.getElementById("result").innerHTML = `
-        <h2>${tara.type} Tara (${tara.meaning})</h2>
-        <p><strong>Result:</strong> ${tara.result}</p>
-        <p>Count from your Nakshatra: ${count}</p>
-      `;
-    }
-  </script>
+/* Generate Chart with merged Nakshatra header */
+function generateChart(){
+ const start=nakshatras.indexOf(chartSel.value);
+ if(start<0)return;
+ const rotated=nakshatras.slice(start).concat(nakshatras.slice(0,start));
+ const col1=rotated.slice(0,9), col2=rotated.slice(9,18), col3=rotated.slice(18,27);
+ let html=`<table><thead><tr><th>Tara Type</th><th colspan="3">Nakshatra / Star</th><th>Result</th></tr></thead><tbody>`;
+ for(let i=0;i<9;i++){
+   const t=taraMap[i];
+   const c=t.css==='ausp'?'row-ausp':t.css==='veryausp'?'row-veryausp':t.css==='inausp'?'row-inausp':'row-mixed';
+   const badge=`badge ${t.css}`;
+   html+=`<tr class="${c}"><td>${t.type}</td><td>${col1[i]}</td><td>${col2[i]}</td><td>${col3[i]}</td><td><span class="${badge}">${t.result}</span></td></tr>`;
+ }
+ html+=`</tbody></table>`;
+ document.getElementById('chartResult').innerHTML=html;
+}
+
+/* Downloads */
+function downloadExcel(){
+  const start=nakshatras.indexOf(chartSel.value);
+  if(start<0)return;
+  const rotated=nakshatras.slice(start).concat(nakshatras.slice(0,start));
+  const col1=rotated.slice(0,9), col2=rotated.slice(9,18), col3=rotated.slice(18,27);
+  
+  const rows=taraMap.map((t,i)=>({
+    Tara: t.type,
+    "Nakshatra / Star": `${col1[i]}, ${col2[i]}, ${col3[i]}`,
+    Result: t.result
+  }));
+
+  const ws=XLSX.utils.json_to_sheet(rows);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Tara Bala Chart");
+  XLSX.writeFile(wb, `${chartSel.value}_TaraBalaChart.xlsx`);
+}
+
+async function downloadPDF(){
+  const { jsPDF }=window.jspdf;
+  const start=nakshatras.indexOf(chartSel.value);
+  if(start<0)return;
+  const rotated=nakshatras.slice(start).concat(nakshatras.slice(0,start));
+  const col1=rotated.slice(0,9), col2=rotated.slice(9,18), col3=rotated.slice(18,27);
+  
+  const doc=new jsPDF({orientation:'portrait',unit:'pt',format:'a4'});
+  doc.setFontSize(16);
+  doc.text(`Tara Bala Chart - ${chartSel.value}`,140,40);
+
+  const header=["Tara Type","Nakshatra / Star","Result"];
+  const body=taraMap.map((t,i)=>[
+    t.type,
+    `${col1[i]}, ${col2[i]}, ${col3[i]}`,
+    t.result
+  ]);
+
+  doc.autoTable({head:[header], body, startY:70, styles:{fontSize:9}});
+  doc.save(`${chartSel.value}_TaraBalaChart.pdf`);
+}
+
+
+/* Initialize defaults */
+userSel.selectedIndex=0;otherSel.selectedIndex=1;calculateTaraBala();
+chartSel.selectedIndex=0;generateChart();
+</script>
 </body>
 </html>
