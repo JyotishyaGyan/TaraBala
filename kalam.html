@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahu, Gulika & Yamaganda Kalam Calculator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+<style>
+  :root{
+    --bg1:#5a60ff; --bg2:#7f87ff; --white:#fff;
+    --card:rgba(255,255,255,0.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Poppins",sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--white);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:24px;
+  }
+  h1{text-align:center;margin-bottom:20px;font-size:1.8rem;}
+  h1 i{margin-right:8px;color:#ffd700;}
+  .container{width:100%;max-width:600px}
+  .content{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.2)}
+  label{display:inline-block;margin-right:6px;font-size:0.9rem}
+  input[type="date"]{
+    width:auto; padding:8px 10px; font-size:0.9rem;
+    border-radius:6px; border:none; margin-right:6px;
+  }
+  .icon-btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:50%;border:none;
+    background:#fff;color:#222;font-size:1rem;cursor:pointer;
+    transition:0.3s;
+  }
+  .icon-btn:hover{opacity:0.95;transform:scale(1.1);}
+  .small-btn{width:28px;height:28px;font-size:0.85rem;margin-left:4px;}
+  .row{display:flex;align-items:center;margin-bottom:6px;}
+  .result{margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;text-align:center;font-size:0.9rem;table-layout:fixed;}
+  th,td{padding:8px;border:1px solid rgba(255,255,255,0.08);vertical-align:middle;}
+  th:nth-child(1), td:nth-child(1){width:38%;} /* Kalam column wider */
+  th:nth-child(2), td:nth-child(2){
+    width:55%;
+    white-space:normal;
+    word-wrap:break-word;
+    line-height:1.2rem;
+    /* text-transform:capitalize; */
+  } /* Description two lines */
+  th:nth-child(3), td:nth-child(3){width:38%;} /* Time column same */
+  th{background:rgba(255,255,255,0.06);}
+  .location-info{margin-top:6px;font-size:0.8rem;line-height:1.3;text-align:center;}
+  .location-info span{margin:0 8px;}
+</style>
+</head>
+<body>
+
+<h1>🌟 Rahu, Gulika & Yamaganda Kalam 🌙</h1>
+
+<div class="container">
+  <div class="content">
+    <div class="row">
+      <label for="selectedDate">Select Date:</label>
+      <input type="date" id="selectedDate" onchange="calculateForDate()" />
+      <button class="icon-btn small-btn" title="Use My Location" onclick="useMyLocation()">
+        <i class="fas fa-location-dot"></i>
+      </button>
+    </div>
+    
+    <div class="location-info" id="locationInfo"></div>
+
+    <div class="result">
+      <table>
+        <tr>
+          <th><i class="fas fa-clock"></i> Kalam</th>
+          <th><i class="fas fa-sticky-note"></i> Description</th>
+          <th><i class="fas fa-hourglass-start"></i> Time (hrs)</th>
+        </tr>
+        <tr>
+          <td>Rahu Kalam <i class="fas fa-moon"></i></td>
+          <td>Avoid starting new work;<br>Inauspicious period.</td>
+          <td id="rahuTime">--:-- - --:--</td>
+        </tr>
+        <tr>
+          <td>Gulika Kalam <i class="fas fa-star"></i></td>
+          <td>Generally inauspicious;<br>Avoid important tasks.</td>
+          <td id="gulikaTime">--:-- - --:--</td>
+        </tr>
+        <tr>
+          <td>Yamaganda Kalam <i class="fas fa-fire"></i></td>
+          <td>Avoid important decisions;<br>Considered inauspicious.</td>
+          <td id="yamaTime">--:-- - --:--</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const kalamIndices = {
+  0: { rahu: 7, gulika: 6, yama: 4 }, // Sunday
+  1: { rahu: 1, gulika: 5, yama: 3 }, // Monday
+  2: { rahu: 6, gulika: 4, yama: 2 }, // Tuesday
+  3: { rahu: 4, gulika: 3, yama: 1 }, // Wednesday
+  4: { rahu: 5, gulika: 2, yama: 0 }, // Thursday
+  5: { rahu: 3, gulika: 1, yama: 6 }, // Friday
+  6: { rahu: 2, gulika: 0, yama: 5 }, // Saturday
+};
+
+let latitude = null;
+let longitude = null;
+
+function formatTime(date) {
+  const h = date.getHours().toString().padStart(2,"0");
+  const m = date.getMinutes().toString().padStart(2,"0");
+  return `${h}:${m}`;
+}
+
+function useMyLocation(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      latitude = pos.coords.latitude;
+      longitude = pos.coords.longitude;
+      document.getElementById("locationInfo").innerText = 
+        `📍 Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}`;
+      const input = document.getElementById('selectedDate').value;
+      if(input) calculateForDate();
+    });
+  } else alert("Geolocation not supported");
+}
+
+function calculateKalam(date) {
+  if(latitude===null || longitude===null){
+    alert("Please click 'Use My Location' first.");
+    return;
+  }
+  const times = SunCalc.getTimes(date, latitude, longitude);
+  const sunrise = new Date(times.sunrise.getTime() - 60000);
+  const sunset = new Date(times.sunset.getTime() - 60000);
+
+  const dayDuration = (sunset - sunrise) / 8;
+  const day = date.getDay();
+
+  const rahuIdx = kalamIndices[day].rahu;
+  const gulikaIdx = kalamIndices[day].gulika;
+  const yamaIdx = kalamIndices[day].yama;
+
+  const rahuStart = new Date(sunrise.getTime() + dayDuration * rahuIdx);
+  const rahuEnd = new Date(rahuStart.getTime() + dayDuration);
+  const gulikaStart = new Date(sunrise.getTime() + dayDuration * gulikaIdx);
+  const gulikaEnd = new Date(gulikaStart.getTime() + dayDuration);
+  const yamaStart = new Date(sunrise.getTime() + dayDuration * yamaIdx);
+  const yamaEnd = new Date(yamaStart.getTime() + dayDuration);
+
+  document.getElementById("locationInfo").innerHTML = `
+    🌅 Sunrise: ${formatTime(sunrise)} hrs <span>🌇 Sunset: ${formatTime(sunset)} hrs</span><br>
+    📍 Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}
+  `;
+
+  document.getElementById('rahuTime').innerText = `${formatTime(rahuStart)} - ${formatTime(rahuEnd)}`;
+  document.getElementById('gulikaTime').innerText = `${formatTime(gulikaStart)} - ${formatTime(gulikaEnd)}`;
+  document.getElementById('yamaTime').innerText = `${formatTime(yamaStart)} - ${formatTime(yamaEnd)}`;
+}
+
+function calculateForDate(){
+  const input = document.getElementById('selectedDate').value;
+  if(!input){alert('Please select a date');return;}
+  calculateKalam(new Date(input));
+}
+</script>
+</body>
+</html>
