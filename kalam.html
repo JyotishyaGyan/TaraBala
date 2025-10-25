@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rahu, Gulika & Yamagandam Calculator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root{
+    --bg1:#5a60ff; --bg2:#7f87ff; --white:#fff;
+    --ausp:#2ecc71; --veryausp:#1b8f4a; --inausp:#e74c3c; --mixed:#f39c12;
+    --card:rgba(255,255,255,0.08); --card2:rgba(255,255,255,0.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Poppins",sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--white);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:24px;
+  }
+  h1{text-align:center;margin-bottom:20px;font-size:1.8rem;}
+  h1 i{margin-right:8px;color:#ffd700;}
+  .container{width:100%;max-width:500px}
+  .content{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.2)}
+  label{display:block;margin-top:8px;margin-bottom:4px;font-size:0.9rem}
+  input[type="date"]{
+    width:auto; padding:8px 10px; font-size:0.9rem;
+    border-radius:6px; border:none; margin-right:6px;
+  }
+  .icon-btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:50%;border:none;
+    background:#fff;color:#222;font-size:1rem;cursor:pointer;
+    transition:0.3s;
+  }
+  .icon-btn:hover{opacity:0.95;transform:scale(1.1);}
+  .result{margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;text-align:center;font-size:0.85rem;}
+  th,td{padding:8px;border:1px solid rgba(255,255,255,0.08)}
+  th{background:rgba(255,255,255,0.06)}
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-weight:600;color:#fff;font-size:0.8rem;}
+  .ausp{background:var(--ausp)} .veryausp{background:var(--veryausp)}
+  .inausp{background:var(--inausp)} .mixed{background:var(--mixed)}
+  .row-ausp td{background:rgba(46,204,113,0.08)}
+  .row-veryausp td{background:rgba(27,143,74,0.08)}
+  .row-inausp td{background:rgba(231,76,60,0.06)}
+  .row-mixed td{background:rgba(243,156,18,0.06)}
+</style>
+</head>
+<body>
+
+<h1>🌟 Rahu, Gulika & Yamagandam 🌙</h1>
+
+<div class="container">
+  <div class="content">
+    <label for="selectedDate">Select Date:</label>
+    <div style="display:flex;align-items:center;">
+      <input type="date" id="selectedDate" />
+      <button class="icon-btn" title="Calculate Kalam" onclick="calculateForDate()">
+        <i class="fas fa-calculator"></i>
+      </button>
+    </div>
+
+    <div class="result">
+      <table>
+        <tr>
+          <th><i class="fas fa-clock"></i> Kalam</th>
+		  <th><i class="fas fa-sticky-note"></i> Description</th>
+          <th><i class="fas fa-hourglass-start"></i> Time</th>
+        </tr>
+        <tr>
+          <td>Rahu Kalam <i class="fas fa-moon"></i></td>
+		  <td>Rahu Kalam Description</td>
+          <td id="rahuTime">--:-- - --:--</td>
+        </tr>
+        <tr>
+          <td>Gulika Kalam <i class="fas fa-star"></i></td>
+		  <td>Gulika Kalam Description</td>
+          <td id="gulikaTime">--:-- - --:--</td>
+        </tr>
+        <tr>
+          <td>Yamagandam <i class="fas fa-fire"></i></td>
+		  <td>Yamagandam Description</td>
+          <td id="yamaTime">--:-- - --:--</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const periods = {
+  0: { rahu: 4, gulika: 7, yama: 1 }, // Sunday
+  1: { rahu: 2, gulika: 5, yama: 6 }, // Monday
+  2: { rahu: 7, gulika: 4, yama: 3 }, // Tuesday
+  3: { rahu: 5, gulika: 2, yama: 7 }, // Wednesday
+  4: { rahu: 6, gulika: 3, yama: 5 }, // Thursday
+  5: { rahu: 3, gulika: 6, yama: 4 }, // Friday
+  6: { rahu: 1, gulika: 7, yama: 2 }, // Saturday
+};
+
+function formatTime(date) {
+  return date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function calculateKalam(sunrise, sunset, date) {
+  const dayLength = (sunset - sunrise) / 6;
+  const today = date.getDay();
+  const rahuIndex = periods[today].rahu - 1;
+  const gulikaIndex = periods[today].gulika - 1;
+  const yamaIndex = periods[today].yama - 1;
+
+  const rahuStart = new Date(sunrise.getTime() + dayLength * rahuIndex);
+  const rahuEnd = new Date(rahuStart.getTime() + dayLength);
+
+  const gulikaStart = new Date(sunrise.getTime() + dayLength * gulikaIndex);
+  const gulikaEnd = new Date(gulikaStart.getTime() + dayLength);
+
+  const yamaStart = new Date(sunrise.getTime() + dayLength * yamaIndex);
+  const yamaEnd = new Date(yamaStart.getTime() + dayLength);
+
+  document.getElementById('rahuTime').innerText = `${formatTime(rahuStart)} - ${formatTime(rahuEnd)}`;
+  document.getElementById('gulikaTime').innerText = `${formatTime(gulikaStart)} - ${formatTime(gulikaEnd)}`;
+  document.getElementById('yamaTime').innerText = `${formatTime(yamaStart)} - ${formatTime(yamaEnd)}`;
+}
+
+function calculateForDate() {
+  const input = document.getElementById('selectedDate').value;
+  if(!input){
+    alert('Please select a date');
+    return;
+  }
+  const selectedDate = new Date(input);
+  const sunrise = new Date(selectedDate);
+  sunrise.setHours(6,0,0);
+  const sunset = new Date(selectedDate);
+  sunset.setHours(18,0,0);
+  calculateKalam(sunrise, sunset, selectedDate);
+}
+</script>
+
+</body>
+</html>
