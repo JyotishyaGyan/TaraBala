@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day & Night Muhurtha Calculator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.9.0/suncalc.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+  :root{
+    --bg1:#5a60ff; --bg2:#7f87ff; --white:#fff;
+    --card:rgba(255,255,255,0.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Poppins",sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:var(--white);
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:24px;
+  }
+  h1{text-align:center;margin-bottom:20px;font-size:1.8rem;}
+  h1 i{margin-right:8px;color:#ffd700;}
+  .container{width:100%;max-width:1200px} /* Increased max-width for table */
+  .content{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.2)}
+  label{display:inline-block;margin-right:6px;font-size:0.9rem}
+  input[type="date"]{
+    width:auto; padding:8px 10px; font-size:0.9rem;
+    border-radius:6px; border:none; margin-right:6px;
+  }
+  .icon-btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:50%;border:none;
+    background:#fff;color:#222;font-size:1rem;cursor:pointer;
+    transition:0.3s;
+  }
+  .icon-btn:hover{opacity:0.95;transform:scale(1.1);}
+  .small-btn{width:28px;height:28px;font-size:0.85rem;margin-left:4px;}
+  .row{display:flex;align-items:center;margin-bottom:6px;}
+  .result{margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);overflow-x:hidden;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;text-align:center;font-size:0.9rem;table-layout:fixed;}
+  th,td{padding:10px;border:1px solid rgba(255,255,255,0.08);vertical-align:middle;word-wrap:break-word;}
+  th{background:rgba(255,255,255,0.06);white-space:nowrap;} /* Prevent headers from wrapping */
+  th:nth-child(1), td:nth-child(1){width:5%;} 
+  th:nth-child(2), td:nth-child(2){width:15%;} /* Day Muhurtha */
+  th:nth-child(3), td:nth-child(3){width:20%;} /* Day Time */
+  th:nth-child(4), td:nth-child(4){width:15%;} /* Day Auspiciousness */
+  th:nth-child(5), td:nth-child(5){width:15%;} /* Night Muhurtha */
+  th:nth-child(6), td:nth-child(6){width:20%;} /* Night Time */
+  th:nth-child(7), td:nth-child(7){width:15%;} /* Night Auspiciousness */
+  .location-info{margin-top:6px;font-size:0.8rem;line-height:1.3;text-align:center;}
+  .location-info span{margin:0 8px;}
+</style>
+</head>
+<body>
+
+<h1>🌞 Day & Night Muhurtha 🌙</h1>
+
+<div class="container">
+  <div class="content">
+    <div class="row">
+      <label for="selectedDate">Select Date:</label>
+      <input type="date" id="selectedDate" onchange="calculateForDate()" />
+      <button class="icon-btn small-btn" title="Use My Location" onclick="useMyLocation()">
+        <i class="fas fa-location-dot"></i>
+      </button>
+    </div>
+    
+    <div class="location-info" id="locationInfo"></div>
+
+    <div class="result">
+      <table id="muhurthaTable">
+        <tr>
+          <th>Sl. No.</th>
+          <th>Day Muhurtha</th>
+          <th>Day Time</th>
+          <th>Day Auspiciousness</th>
+          <th>Night Muhurtha</th>
+          <th>Night Time</th>
+          <th>Night Auspiciousness</th>
+        </tr>
+        <!-- Rows populated dynamically -->
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let latitude = null;
+let longitude = null;
+
+const dayNames = ["Rudrae", "Ahie", "Mytra", "Pithru", "Vaasu", "Varae", "Viswedeva", "Vidhe", "Sathamuki", "Purhuta", "Vahine", "Nakanchara", "Varun", "Aryamana", "Bhagae"];
+const nightNames = ["Girisae", "Ajpada", "Ahirbudnya", "Pushae", "Aswin", "Yama", "Agni", "Vidatru", "Chandae", "Adite", "Jeevaa", "Vishnu", "Yamigadyuti", "Thyastur", "Samdrame"];
+
+const dayAuspicious = ["Inauspicious","Inauspicious","Auspicious","Inauspicious","Auspicious","Auspicious","Auspicious","Auspicious","Auspicious","Inauspicious","Inauspicious","Inauspicious","Auspicious","Auspicious","Inauspicious"];
+const nightAuspicious = ["Inauspicious","Inauspicious","Auspicious","Auspicious","Auspicious","Inauspicious","Inauspicious","Auspicious","Auspicious","Auspicious","Auspicious","Auspicious","Auspicious","Auspicious","Auspicious"];
+
+function formatTime(date) {
+  const h = date.getHours().toString().padStart(2,"0");
+  const m = date.getMinutes().toString().padStart(2,"0");
+  return `${h}:${m}`;
+}
+
+function useMyLocation(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      latitude = pos.coords.latitude;
+      longitude = pos.coords.longitude;
+      document.getElementById("locationInfo").innerText = 
+        `📍 Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}`;
+      const input = document.getElementById('selectedDate').value;
+      if(input) calculateForDate();
+    });
+  } else alert("Geolocation not supported");
+}
+
+function calculateMuhurtas(date){
+  if(latitude===null || longitude===null){
+    alert("Please click 'Use My Location' first.");
+    return;
+  }
+
+  const times = SunCalc.getTimes(date, latitude, longitude);
+  const sunrise = new Date(times.sunrise.getTime() - 60000); 
+  const sunset = new Date(times.sunset.getTime() - 60000);   
+  
+  const nextDay = new Date(date);
+  nextDay.setDate(date.getDate()+1);
+  const nextSunrise = new Date(SunCalc.getTimes(nextDay, latitude, longitude).sunrise.getTime() - 60000); 
+
+  const daySegment = (sunset - sunrise) / 15;
+  const nightSegment = (nextSunrise - sunset) / 15;
+
+  const table = document.getElementById('muhurthaTable');
+  table.innerHTML = `<tr>
+    <th>Sl. No.</th>
+    <th>Day Muhurtha</th>
+    <th>Day Time</th>
+    <th>Day Auspiciousness</th>
+    <th>Night Muhurtha</th>
+    <th>Night Time</th>
+    <th>Night Auspiciousness</th>
+  </tr>`;
+
+  for(let i=0;i<15;i++){
+    const dayStart = new Date(sunrise.getTime() + daySegment*i);
+    const dayEnd = new Date(dayStart.getTime() + daySegment);
+    const nightStart = new Date(sunset.getTime() + nightSegment*i);
+    const nightEnd = new Date(nightStart.getTime() + nightSegment);
+
+    const row = `<tr>
+      <td>${i+1}</td>
+      <td>${dayNames[i]}</td>
+      <td>${formatTime(dayStart)} - ${formatTime(dayEnd)}</td>
+      <td>${dayAuspicious[i]}</td>
+      <td>${nightNames[i]}</td>
+      <td>${formatTime(nightStart)} - ${formatTime(nightEnd)}</td>
+      <td>${nightAuspicious[i]}</td>
+    </tr>`;
+    table.innerHTML += row;
+  }
+
+  document.getElementById("locationInfo").innerHTML = `
+    🌅 Sunrise: ${formatTime(sunrise)} hrs <span>🌇 Sunset: ${formatTime(sunset)} hrs</span><br>
+    📍 Latitude: ${latitude.toFixed(2)}, Longitude: ${longitude.toFixed(2)}
+  `;
+}
+
+function calculateForDate(){
+  const input = document.getElementById('selectedDate').value;
+  if(!input){alert('Please select a date');return;}
+  calculateMuhurtas(new Date(input));
+}
+</script>
+</body>
+</html>
