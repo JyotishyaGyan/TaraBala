@@ -22,7 +22,7 @@
   }
   h1{text-align:center;margin-bottom:20px;font-size:1.8rem;}
   h1 i{margin-right:8px;color:#ffd700;}
-  .container{width:100%;max-width:1200px} /* Increased max-width for table */
+  .container{width:100%;max-width:1200px}
   .content{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 20px rgba(0,0,0,0.2)}
   label{display:inline-block;margin-right:6px;font-size:0.9rem}
   input[type="date"]{
@@ -41,16 +41,14 @@
   .result{margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.04);overflow-x:hidden;}
   table{width:100%;border-collapse:collapse;margin-top:10px;text-align:center;font-size:0.9rem;table-layout:fixed;}
   th,td{padding:10px;border:1px solid rgba(255,255,255,0.08);vertical-align:middle;word-wrap:break-word;}
-  th{background:rgba(255,255,255,0.06);white-space:nowrap;} /* Prevent headers from wrapping */
-  th:nth-child(1), td:nth-child(1){width:5%;} 
-  th:nth-child(2), td:nth-child(2){width:15%;} /* Day Muhurtha */
-  th:nth-child(3), td:nth-child(3){width:20%;} /* Day Time */
-  th:nth-child(4), td:nth-child(4){width:15%;} /* Day Auspiciousness */
-  th:nth-child(5), td:nth-child(5){width:15%;} /* Night Muhurtha */
-  th:nth-child(6), td:nth-child(6){width:20%;} /* Night Time */
-  th:nth-child(7), td:nth-child(7){width:15%;} /* Night Auspiciousness */
+  th{background:rgba(255,255,255,0.06);white-space:nowrap;}
+  th:nth-child(1), td:nth-child(1){width:10%;} 
+  th:nth-child(2), td:nth-child(2){width:30%;}
+  th:nth-child(3), td:nth-child(3){width:30%;}
+  th:nth-child(4), td:nth-child(4){width:30%;}
   .location-info{margin-top:6px;font-size:0.8rem;line-height:1.3;text-align:center;}
   .location-info span{margin:0 8px;}
+  h2{margin-top:20px;text-align:center;font-size:1.2rem;color:#ffd700;}
 </style>
 </head>
 <body>
@@ -70,17 +68,24 @@
     <div class="location-info" id="locationInfo"></div>
 
     <div class="result">
-      <table id="muhurthaTable">
+      <h2>🌞 Day Muhurtha 🌞</h2>
+      <table id="dayTable">
         <tr>
           <th>Sl. No.</th>
-          <th>Day Muhurtha</th>
-          <th>Day Time</th>
-          <th>Day Auspiciousness</th>
-          <th>Night Muhurtha</th>
-          <th>Night Time</th>
-          <th>Night Auspiciousness</th>
+          <th>Muhurtha</th>
+          <th>Time</th>
+          <th>Auspiciousness</th>
         </tr>
-        <!-- Rows populated dynamically -->
+      </table>
+
+      <h2>🌙 Night Muhurtha 🌙</h2>
+      <table id="nightTable">
+        <tr>
+          <th>Sl. No.</th>
+          <th>Muhurtha</th>
+          <th>Time</th>
+          <th>Auspiciousness</th>
+        </tr>
       </table>
     </div>
   </div>
@@ -132,15 +137,21 @@ function calculateMuhurtas(date){
   const daySegment = (sunset - sunrise) / 15;
   const nightSegment = (nextSunrise - sunset) / 15;
 
-  const table = document.getElementById('muhurthaTable');
-  table.innerHTML = `<tr>
+  const dayTable = document.getElementById('dayTable');
+  const nightTable = document.getElementById('nightTable');
+
+  // Reset both tables
+  dayTable.innerHTML = `<tr>
     <th>Sl. No.</th>
-    <th>Day Muhurtha</th>
-    <th>Day Time</th>
-    <th>Day Auspiciousness</th>
-    <th>Night Muhurtha</th>
-    <th>Night Time</th>
-    <th>Night Auspiciousness</th>
+    <th>Muhurtha</th>
+    <th>Time</th>
+    <th>Auspiciousness</th>
+  </tr>`;
+  nightTable.innerHTML = `<tr>
+    <th>Sl. No.</th>
+    <th>Muhurtha</th>
+    <th>Time</th>
+    <th>Auspiciousness</th>
   </tr>`;
 
   for(let i=0;i<15;i++){
@@ -149,16 +160,22 @@ function calculateMuhurtas(date){
     const nightStart = new Date(sunset.getTime() + nightSegment*i);
     const nightEnd = new Date(nightStart.getTime() + nightSegment);
 
-    const row = `<tr>
+    const dayRow = `<tr>
       <td>${i+1}</td>
       <td>${dayNames[i]}</td>
       <td>${formatTime(dayStart)} - ${formatTime(dayEnd)}</td>
       <td>${dayAuspicious[i]}</td>
+    </tr>`;
+
+    const nightRow = `<tr>
+      <td>${i+1}</td>
       <td>${nightNames[i]}</td>
       <td>${formatTime(nightStart)} - ${formatTime(nightEnd)}</td>
       <td>${nightAuspicious[i]}</td>
     </tr>`;
-    table.innerHTML += row;
+
+    dayTable.innerHTML += dayRow;
+    nightTable.innerHTML += nightRow;
   }
 
   document.getElementById("locationInfo").innerHTML = `
